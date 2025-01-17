@@ -24,16 +24,16 @@ import ListCards from './ListCards/ListCards'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useConfirm } from 'material-ui-confirm'
+import { createNewCardAPI, deleteColumnDetailsAPI } from '~/apis'
+import { cloneDeep } from 'lodash'
+import { selectCurrentActiveBoard, updateCurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
-function Column({ column, createNewCard, deleteColumnDetails }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({
+function Column({ column }) {
+  const dispatch = useDispatch()
+  const board = useSelector(selectCurrentActiveBoard)
+
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: column._id,
     data: { ...column }
   })
@@ -64,7 +64,7 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
 
   const [newCardTitle, setNewCardTitle] = useState('')
 
-  const addNewCard = () => {
+  const addNewCard = async () => {
     if (!newCardTitle) {
       toast.error('Please enter Card Title', { position: 'bottom-right' })
       return
@@ -76,13 +76,29 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
       columnId: column._id
     }
 
+    const createdCard = await createNewCardAPI({
+      ...newCardData,
+      boardId: board._id
+    })
+    // Cập nhật state board
     /**
-     * - Gọi lên props function createNewCard nằm ở component cha cao nhất (boards/_id.jsx)
-     * - Lưu ý: về sau ở học phần MERN Stack Advance nâng cao học trực tiếp với mình thì chúng ta sẽ đưa dữ liệu Board ra ngoài Redux Global Store
-     * - Thì lúc này chúng ta có thể gọi luôn API ở đây là xong thay vì phải lần lược gọi ngược lên những component cha phía bên trên. (Đối với component con nằm càng sâu thì càng khổ 😆)
-     * - Với việc sử dụng Redux như vậy thì code sẽ Clean chuẩn chỉnh hơn rất nhiều
+     * - Phía Front-end chúng ta phải tự làm đúng lại state data board (thay vì phải gọi lại api fetchBoardDetailsAPI)
+     * - Lưu ý: cách làm này phụ thuộc vào tùy lựa chọn và đặc thù dự án, có nơi thì Back-end sẽ hỗ trợ trả về luôn toàn bộ Board dù đây có là api tạo Column hay Card đi chăng nữa. => Lúc này Front-end sẽ nhàn hơn
      */
-    createNewCard(newCardData)
+    const newBoard = cloneDeep(board)
+    const columnToUpdate = newBoard.columns.find((column) => column._id === createdCard.columnId)
+
+    if (columnToUpdate) {
+      // Nếu column rỗng: bản chất là đang chứa một cái Placeholder card (Nhớ lại video 37.2, hiện tại là video 69)
+      if (columnToUpdate.cards.some((card) => card.FE_PlaceholderCard)) {
+        columnToUpdate.cards = [createdCard]
+        columnToUpdate.cardOrderIds = [createdCard._id]
+      } else {
+        // Ngược lại Column đã có data thì push vào cuối mảng        columnToUpdate.cards.push(createdCard)
+        columnToUpdate.cardOrderIds.push(createdCard._id)
+      }
+    }
+    dispatch(updateCurrentActiveBoard(newBoard))
 
     // Đóng trạng thái thêm Card mới & Clear Input
     toggleOpenNewCardForm()
@@ -95,22 +111,22 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
   const handleDeleteColumn = () => {
     confirmDeleteColumn({
       title: 'Delete Column?',
-      description:
-        'This action will permanently delete your Column and its Cards! Are you sure?',
+      description: 'This action will permanently delete your Column and its Cards! Are you sure?',
       confirmationText: 'Confirm',
       cancellationText: 'Cancel'
     })
       .then(() => {
-        /**
-         * - Gọi lên props function deleteColumnDetails nằm ở component cha cao nhất (boards/_id.jsx)
-         * - Lưu ý: về sau ở học phần MERN Stack Advance nâng cao học trực tiếp với mình thì chúng ta sẽ đưa dữ liệu Board ra ngoài Redux Global Store
-         * - Thì lúc này chúng ta có thể gọi luôn API ở đây là xong thay vì phải lần lược gọi ngược lên những component cha phía bên trên. (Đối với component con nằm càng sâu thì càng khổ 😆)
-         * - Với việc sử dụng Redux như vậy thì code sẽ Clean chuẩn chỉnh hơn rất nhiều
-         */
-        console.log('column._id:', column._id)
-        console.log('column.title:', column.title)
+        // Xử lý xóa một Column và Cards bên trong nó
+        // Update cho chuẩn dữ liệu state Board
+        const columnId = column._id
+        const newBoard = { ...board }
+        newBoard.columns = newBoard.columns.filter((c) => c._id !== columnId)
+        newBoard.columnOrderIds = newBoard.columnOrderIds.filter((_id) => _id !== columnId)
+        dispatch(updateCurrentActiveBoard(newBoard))
 
-        deleteColumnDetails(column._id)
+        deleteColumnDetailsAPI(columnId).then((res) => {
+          toast.success(res?.deleteResult)
+        })
       })
       .catch(() => {})
   }
@@ -123,13 +139,11 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
         sx={{
           minWidth: '300px',
           maxWidth: '300px',
-          bgcolor: (theme) =>
-            theme.palette.mode === 'dark' ? '#333643' : '#ebecf0',
+          bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#333643' : '#ebecf0'),
           ml: 2,
           borderRadius: '6px',
           height: 'fit-content',
-          maxHeight: (theme) =>
-            `calc(${theme.trello.boardContentHeight} - ${theme.spacing(5)})`
+          maxHeight: (theme) => `calc(${theme.trello.boardContentHeight} - ${theme.spacing(5)})`
         }}
       >
         {/* Box Column Header */}
@@ -233,10 +247,7 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
                 }}
               >
                 <ListItemIcon>
-                  <DeleteForeverIcon
-                    className='delete-forever-icon'
-                    fontSize='small'
-                  />
+                  <DeleteForeverIcon className='delete-forever-icon' fontSize='small' />
                 </ListItemIcon>
                 <ListItemText>Delete this column</ListItemText>
               </MenuItem>
@@ -269,10 +280,7 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
                 justifyContent: 'space-between'
               }}
             >
-              <Button
-                startIcon={<AddCardIcon />}
-                onClick={toggleOpenNewCardForm}
-              >
+              <Button startIcon={<AddCardIcon />} onClick={toggleOpenNewCardForm}>
                 Add new card
               </Button>
               <Tooltip title='Drag to move'>
@@ -303,8 +311,7 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
                   },
                   '& input': {
                     color: (theme) => theme.palette.primary.main,
-                    bgcolor: (theme) =>
-                      theme.palette.mode === 'dark' ? '#333643' : 'white'
+                    bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#333643' : 'white')
                   },
                   '& label.Mui-focused': {
                     color: (theme) => theme.palette.primary.main
