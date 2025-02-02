@@ -34,7 +34,7 @@ function Column({ column }) {
   const board = useSelector(selectCurrentActiveBoard)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: column._id,
+    id: column.id,
     data: { ...column }
   })
 
@@ -56,7 +56,7 @@ function Column({ column }) {
   const handleClick = (event) => setAnchorEl(event.currentTarget)
   const handleClose = () => setAnchorEl(null)
 
-  // Cards đã được sắp xếp ở component cha cao nhất (boards/_id.jsx) (video 71 đã giải thích lý do)
+  // Cards đã được sắp xếp ở component cha cao nhất (boards/id.jsx) (video 71 đã giải thích lý do)
   const orderedCards = column.cards
 
   const [openNewCardForm, setOpenNewCardForm] = useState(false)
@@ -73,26 +73,25 @@ function Column({ column }) {
     // Tạo dữ liệu Card để gọi API
     const newCardData = {
       title: newCardTitle,
-      columnId: column._id
+      column_id: column.id
     }
 
     const createdCard = await createNewCardAPI({
-      ...newCardData,
-      boardId: board._id
+      ...newCardData
     })
 
     const newBoard = cloneDeep(board)
-    const columnToUpdate = newBoard.columns.find((column) => column._id === createdCard.columnId)
+    const columnToUpdate = newBoard.columns.find((column) => column.id === createdCard.column_id)
 
     if (columnToUpdate) {
       // Nếu column rỗng: bản chất là đang chứa một cái Placeholder card (Nhớ lại video 37.2, hiện tại là video 69)
       if (columnToUpdate.cards.some((card) => card.FE_PlaceholderCard)) {
         columnToUpdate.cards = [createdCard]
-        columnToUpdate.cardOrderIds = [createdCard._id]
+        // columnToUpdate.cardOrderIds = [createdCard.id]
       } else {
         // Ngược lại Column đã có data thì push vào cuối mảng columnToUpdate.cards.push(createdCard)
         columnToUpdate.cards.push(createdCard)
-        columnToUpdate.cardOrderIds.push(createdCard._id)
+        // columnToUpdate.cardOrderIds.push(createdCard.id)
       }
     }
     dispatch(updateCurrentActiveBoard(newBoard))
@@ -115,14 +114,15 @@ function Column({ column }) {
       .then(() => {
         // Xử lý xóa một Column và Cards bên trong nó
         // Update cho chuẩn dữ liệu state Board
-        const columnId = column._id
+        const columnId = column.id
         const newBoard = { ...board }
-        newBoard.columns = newBoard.columns.filter((c) => c._id !== columnId)
-        newBoard.columnOrderIds = newBoard.columnOrderIds.filter((_id) => _id !== columnId)
+        newBoard.columns = newBoard.columns.filter((c) => c.id !== columnId)
+
+        // newBoard.columnOrderIds = newBoard.columnOrderIds.filter((id) => id !== columnId)
         dispatch(updateCurrentActiveBoard(newBoard))
 
         deleteColumnDetailsAPI(columnId).then((res) => {
-          toast.success(res?.deleteResult)
+          toast.success(res?.message)
         })
       })
       .catch(() => {})

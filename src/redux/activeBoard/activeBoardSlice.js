@@ -13,7 +13,7 @@ const initialState = {
 // đi kèm với extraReducer
 
 export const fetchBoardDetailsAPI = createAsyncThunk('activeBoard/fetchBoardDetailsAPI', async (boardId) => {
-  const response = await authorizeAxiosInstance.get(`${API_ROOT}/v1/boards/${boardId}`)
+  const response = await authorizeAxiosInstance.get(`${API_ROOT}/api/boards/${boardId}`)
   // Lưu ý: axios sẽ trả về kết quả về qua property của nó là data
   return response.data
 })
@@ -37,16 +37,16 @@ export const activeBoardSlice = createSlice({
       let board = action.payload
 
       // Sắp xếp thứ tự các column luôn ở đây trước khi đưa dữ liệu xuống bên dưới các component con (video 71 đã giải thích lý do ở phần Fix bug quan trọng)
-      board.columns = mapOrder(board.columns, board.columnOrderIds, '_id')
+      // board.column = mapOrder(board.column, board.columnOrderIds, 'id')
 
       board.columns.forEach((column) => {
         // Khi F5 trang web thì cần xử lý vấn đề kéo thả vào một column rỗng (Nhớ lại video 37.2, code hiện tại là video 69)
         if (isEmpty(column.cards)) {
           column.cards = [generatePlaceholderCard(column)]
-          column.cardOrderIds = [generatePlaceholderCard(column)._id]
+          // column.cardOrderIds = [generatePlaceholderCard(column).id]
         } else {
           // Sắp xếp thứ tự các column luôn ở đây trước khi đưa dữ liệu xuống bên dưới các component con (video 71 đã giải thích lý do ở phần Fix bug quan trọng)
-          column.cards = mapOrder(column.cards, column.cardOrderIds, '_id')
+          // column.cards = mapOrder(column.cards, column.cardOrderIds, 'id')
         }
       })
 

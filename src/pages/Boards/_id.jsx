@@ -4,7 +4,13 @@ import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
 // import { mockData } from '~/apis/mock-data'
 import { useEffect } from 'react'
-import { moveCardToDifferentColumnAPI, updateBoardDetailsAPI, updateColumnDetailsAPI } from '~/apis'
+import {
+  moveCardInColumn,
+  moveCardToDifferentColumnAPI,
+  moveColumnInBoardAPI,
+  updateBoardDetailsAPI,
+  updateColumnDetailsAPI
+} from '~/apis'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
@@ -36,15 +42,15 @@ function Board() {
    */
   const moveColumns = (dndOrderedColumns) => {
     // Update cho chuẩn dữ liệu state Board
-    const dndOrderedColumnsIds = dndOrderedColumns.map((c) => c._id)
+    const dndOrderedColumnsIds = dndOrderedColumns.map((c) => c.id)
     const newBoard = { ...board }
     newBoard.columns = dndOrderedColumns
     newBoard.columnOrderIds = dndOrderedColumnsIds
     dispatch(updateCurrentActiveBoard(newBoard))
 
     // Gọi API update Board
-    updateBoardDetailsAPI(newBoard._id, {
-      columnOrderIds: dndOrderedColumnsIds
+    moveColumnInBoardAPI({
+      ordered_column_ids: dndOrderedColumnsIds
     })
   }
 
@@ -55,44 +61,48 @@ function Board() {
   const moveCardInTheSameColumn = (dndOrderedCards, dndOrderedCardIds, columnId) => {
     // Update cho chuẩn dữ liệu state Board
     const newBoard = cloneDeep(board)
-    const columnToUpdate = newBoard.columns.find((column) => column._id === columnId)
+    const columnToUpdate = newBoard.columns.find((column) => column.id === columnId)
     if (columnToUpdate) {
       columnToUpdate.cards = dndOrderedCards
-      columnToUpdate.cardOrderIds = dndOrderedCardIds
+      // columnToUpdate.cardOrderIds = dndOrderedCardIds
     }
     dispatch(updateCurrentActiveBoard(newBoard))
 
     // Gọi API update Column
-    updateColumnDetailsAPI(columnId, { cardOrderIds: dndOrderedCardIds })
+    moveCardInColumn({ ordered_card_ids: dndOrderedCardIds })
   }
 
   /**
    * Khi di chuyển card sang Column khác:
-   * B1: Cập nhật mảng cardOrderIds của Board ban đầu chứa nó (Hiểu bản chất là xóa cái _id của Card ra khỏi mảng)
-   * B2: Cập nhật mảng cardOrderIds của Column tiếp theo (Hiểu bản chất là thêm _id của Card vào mảng)
+   * B1: Cập nhật mảng cardOrderIds của Board ban đầu chứa nó (Hiểu bản chất là xóa cái id của Card ra khỏi mảng)
+   * B2: Cập nhật mảng cardOrderIds của Column tiếp theo (Hiểu bản chất là thêm id của Card vào mảng)
    * B3: Cập nhật lại trường columnId mới của cái Card đã kéo
    * => Làm một API support riêng
    */
   const moveCardToDifferentColumn = (currentCardId, prevColumnId, nextColumnId, dndOrderedColumns) => {
     // Update cho chuẩn dữ liệu state Board
-    const dndOrderedColumnsIds = dndOrderedColumns.map((c) => c._id)
+    const dndOrderedColumnsIds = dndOrderedColumns.map((c) => c.id)
     const newBoard = { ...board }
     newBoard.columns = dndOrderedColumns
     newBoard.columnOrderIds = dndOrderedColumnsIds
     dispatch(updateCurrentActiveBoard(newBoard))
 
     // Gọi API xử lý phía BE
-    let prevCardOrderIds = dndOrderedColumns.find((c) => c._id === prevColumnId)?.cardOrderIds
+    let prevCardOrderIds = dndOrderedColumns.find((c) => c.id === prevColumnId)?.cardOrderIds
 
     // Xử lý vấn đề khi kéo Card cuối cùng ra khỏi Column, Column rỗng sẽ có placeholder-card, cần xóa nó đi trước khi gửi dữ liệu lên cho phía BE. (Nhớ lại video 37.2)
-    if (prevCardOrderIds[0].includes('placeholder-card')) prevCardOrderIds = []
+    if (typeof prevCardOrderIds[0] === 'string' && prevCardOrderIds[0].includes('placeholder-card')) {
+      // Xử lý khi column rỗng
+      prevCardOrderIds = []
+    }
 
     moveCardToDifferentColumnAPI({
-      currentCardId,
-      prevColumnId,
-      prevCardOrderIds,
-      nextColumnId,
-      nextCardOrderIds: dndOrderedColumns.find((c) => c._id === nextColumnId)?.cardOrderIds
+      card_id: currentCardId,
+      next_column_id: nextColumnId,
+      // prevColumnId,
+      prev_card_order_index: prevCardOrderIds,
+      // nextColumnId,
+      next_card_order_index: dndOrderedColumns.find((c) => c.id === nextColumnId)?.cardOrderIds
     })
   }
 

@@ -12,15 +12,15 @@ export const capitalizeFirstLetter = (val) => {
  * Card đặt biệt này sẽ được ẩn ở giao diện UI người dùng.
  * Cấu trúc Id của cái card này để Unique rất đơn giản, không cần phải làm random phức tạp:
  * "columnId-placeholder-card" (mỗi column chỉ có thể có tối đa một cái Placeholder Card)
- * Quan trọng khi tạo: phải đầy đủ: (_id, _boardId, columnId, FE_PlaceholderCard)
+ * Quan trọng khi tạo: phải đầy đủ: (id, _boardId, columnId, FE_PlaceholderCard)
  * => Kỹ hơn nữa về cách tạo chuẩn ở bước nào thì sẽ ở học phần tích hợp API Back-end vào dự
  * án. (bởi vì đây là file mock-data)
  */
 export const generatePlaceholderCard = (column) => {
   return {
-    _id: `${column._id}-placeholder-card`,
-    boardId: column.boardId,
-    columnId: column._id,
+    id: `${column.id}-placeholder-card`,
+    // boardId: column.boardId,
+    column_id: column.id,
     FE_PlaceholderCard: true
   }
 }
