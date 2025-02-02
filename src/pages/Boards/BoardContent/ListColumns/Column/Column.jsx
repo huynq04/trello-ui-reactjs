@@ -80,11 +80,7 @@ function Column({ column }) {
       ...newCardData,
       boardId: board._id
     })
-    // Cập nhật state board
-    /**
-     * - Phía Front-end chúng ta phải tự làm đúng lại state data board (thay vì phải gọi lại api fetchBoardDetailsAPI)
-     * - Lưu ý: cách làm này phụ thuộc vào tùy lựa chọn và đặc thù dự án, có nơi thì Back-end sẽ hỗ trợ trả về luôn toàn bộ Board dù đây có là api tạo Column hay Card đi chăng nữa. => Lúc này Front-end sẽ nhàn hơn
-     */
+
     const newBoard = cloneDeep(board)
     const columnToUpdate = newBoard.columns.find((column) => column._id === createdCard.columnId)
 
@@ -94,7 +90,8 @@ function Column({ column }) {
         columnToUpdate.cards = [createdCard]
         columnToUpdate.cardOrderIds = [createdCard._id]
       } else {
-        // Ngược lại Column đã có data thì push vào cuối mảng        columnToUpdate.cards.push(createdCard)
+        // Ngược lại Column đã có data thì push vào cuối mảng columnToUpdate.cards.push(createdCard)
+        columnToUpdate.cards.push(createdCard)
         columnToUpdate.cardOrderIds.push(createdCard._id)
       }
     }
@@ -340,6 +337,7 @@ function Column({ column }) {
                 }}
               >
                 <Button
+                  className='interceptor-loading'
                   onClick={addNewCard}
                   variant='contained'
                   color='success'
