@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Avatar from '@mui/material/Avatar'
@@ -19,8 +19,15 @@ import {
   EMAIL_RULE_MESSAGE
 } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
+import { getMyInfo } from '~/redux/user/userSlice'
+import { loginUserAPI } from '~/apis'
+import { toast } from 'react-toastify'
+import { useDispatch } from 'react-redux'
 
 function LoginForm() {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
   const {
     register,
     handleSubmit,
@@ -28,7 +35,20 @@ function LoginForm() {
   } = useForm()
 
   const submitLogIn = (data) => {
-    console.log('submit login', data)
+    const { email, password } = data
+    toast
+      .promise(loginUserAPI({ email, password }), {
+        pending: 'Logging in...'
+      })
+      .then((res) => {
+        if (!res.error) {
+          dispatch(getMyInfo()).then((res) => {
+            console.log(res)
+
+            if (!res.error) navigate('/')
+          })
+        }
+      })
   }
 
   return (

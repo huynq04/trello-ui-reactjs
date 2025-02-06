@@ -1,5 +1,6 @@
 import { API_ROOT } from '~/utils/constants'
 import authorizeAxiosInstance from '~/utils/authorizeAxios'
+import { toast } from 'react-toastify'
 
 /**
  * Lưu ý: Đối với việc sử dụng axios ở khóa MERN Stack Pro trên kênh Youtube: TrungQuanDev - Một lập trình viên
@@ -57,5 +58,26 @@ export const deleteColumnDetailsAPI = async (columnId) => {
 /** Cards **/
 export const createNewCardAPI = async (newCardData) => {
   const response = await authorizeAxiosInstance.post(`${API_ROOT}/api/cards`, newCardData)
+  return response.data
+}
+
+export const registerUserAPI = async (data) => {
+  const res = await authorizeAxiosInstance.post(`${API_ROOT}/api/auth/register`, data)
+  toast.success('Account created successfully! Please check your email to verify your account.', {
+    theme: 'colored'
+  })
+  return res.data
+}
+
+export const verifyUserAPI = async (id, hash, data) => {
+  const res = await authorizeAxiosInstance.post(`${API_ROOT}/api/auth/email/verify/${id}/${hash}`, data)
+  toast.success('Account verified successfully! Now you can enjoy our services! Have a great day!', {
+    theme: 'colored'
+  })
+  return res.data
+}
+
+export const loginUserAPI = async (data) => {
+  const response = await authorizeAxiosInstance.post(`${API_ROOT}/login`, data)
   return response.data
 }
