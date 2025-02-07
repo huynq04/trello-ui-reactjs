@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { API_ROOT } from '~/utils/constants'
 import authorizeAxiosInstance from '~/utils/authorizeAxios'
+import { toast } from 'react-toastify'
 
 const initialState = {
   currentUser: null
@@ -14,6 +15,15 @@ export const loginUserAPI = createAsyncThunk('user/loginUserAPI', async (data) =
   return response.data
 })
 
+export const logoutUserAPI = createAsyncThunk('user/logoutUserAPI', async (showSuccessMessage = true) => {
+  const response = await authorizeAxiosInstance.post(`${API_ROOT}/logout`)
+  if (showSuccessMessage) {
+    toast.success('Logout successfully')
+  }
+
+  return response.data
+})
+
 export const getMyInfo = createAsyncThunk('user/getMyInfo', async () => {
   const response = await authorizeAxiosInstance.get(`${API_ROOT}/api/me`)
   return response.data
@@ -23,7 +33,12 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   // reducers: noi xu ly du lieu dong bo (sync)
-  reducers: {},
+  reducers: {
+    updateCurrentUser: (state, action) => {
+      const user = action.payload
+      state.currentUser = user
+    }
+  },
   // ExtraReducer: noi xu ly du lieu bat dong bo (async)
   extraReducers: (builder) => {
     builder.addCase(loginUserAPI.fulfilled, (state, action) => {
@@ -35,11 +50,15 @@ export const userSlice = createSlice({
       let user = action.payload
       state.currentUser = user
     })
+
+    builder.addCase(logoutUserAPI.fulfilled, (state) => {
+      state.currentUser = null
+    })
   }
 })
 
 // Action creators are generated for each case reducer function
-// export const { updateCurrentUser } = userSlice.actions
+export const { updateCurrentUser } = userSlice.actions
 
 export const selectCurrentUser = (state) => {
   return state.user.currentUser
