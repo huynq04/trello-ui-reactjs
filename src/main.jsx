@@ -14,24 +14,31 @@ import { store } from '~/redux/store'
 // browser router
 import { BrowserRouter } from 'react-router-dom'
 
+// redux-persist
+import { PersistGate } from 'redux-persist/integration/react'
+import { persistStore } from 'redux-persist'
+const persistor = persistStore(store)
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter basename='/'>
     <Provider store={store}>
-      <CssVarsProvider theme={theme}>
-        <ConfirmProvider
-          defaultOptions={{
-            dialogProps: { maxWidth: 'xs' },
-            confirmationButtonProps: { color: 'secondary', variant: 'outlined' },
-            cancellationButtonProps: { color: 'inherit' },
-            allowClose: false,
-            buttonOrder: ['confirm', 'cancel']
-          }}
-        >
-          <CssBaseline />
-          <App />
-          <ToastContainer position='bottom-left' theme='colored' />
-        </ConfirmProvider>
-      </CssVarsProvider>
+      <PersistGate persistor={persistor}>
+        <CssVarsProvider theme={theme}>
+          <ConfirmProvider
+            defaultOptions={{
+              dialogProps: { maxWidth: 'xs' },
+              confirmationButtonProps: { color: 'secondary', variant: 'outlined' },
+              cancellationButtonProps: { color: 'inherit' },
+              allowClose: false,
+              buttonOrder: ['confirm', 'cancel']
+            }}
+          >
+            <CssBaseline />
+            <App />
+            <ToastContainer position='bottom-left' theme='colored' />
+          </ConfirmProvider>
+        </CssVarsProvider>
+      </PersistGate>
     </Provider>
   </BrowserRouter>
 )

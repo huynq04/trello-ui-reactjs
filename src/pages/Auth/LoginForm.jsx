@@ -19,8 +19,8 @@ import {
   EMAIL_RULE_MESSAGE
 } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
-import { getMyInfo } from '~/redux/user/userSlice'
-import { loginUserAPI } from '~/apis'
+import { getMyInfo, loginUserAPI } from '~/redux/user/userSlice'
+// import { loginUserAPI } from '~/apis'
 import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
 
@@ -37,17 +37,12 @@ function LoginForm() {
   const submitLogIn = (data) => {
     const { email, password } = data
     toast
-      .promise(loginUserAPI({ email, password }), {
+      .promise(dispatch(loginUserAPI({ email, password })), {
         pending: 'Logging in...'
       })
       .then((res) => {
-        if (!res.error) {
-          dispatch(getMyInfo()).then((res) => {
-            console.log(res)
-
-            if (!res.error) navigate('/')
-          })
-        }
+        console.log(res)
+        if (!res.error) navigate('/')
       })
   }
 

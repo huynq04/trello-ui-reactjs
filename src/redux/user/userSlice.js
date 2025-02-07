@@ -26,7 +26,10 @@ export const userSlice = createSlice({
   reducers: {},
   // ExtraReducer: noi xu ly du lieu bat dong bo (async)
   extraReducers: (builder) => {
-    // builder.addCase(loginUserAPI.fulfilled, (state, action) => {})
+    builder.addCase(loginUserAPI.fulfilled, (state, action) => {
+      let user = action.payload
+      state.currentUser = user
+    })
 
     builder.addCase(getMyInfo.fulfilled, (state, action) => {
       let user = action.payload

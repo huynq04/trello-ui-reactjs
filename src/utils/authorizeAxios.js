@@ -39,11 +39,13 @@ authorizeAxiosInstance.interceptors.response.use(
     // Do something with response error
 
     interceptorLoadingElements(false)
+
     let errorMessage = error?.message
     if (error?.response?.data?.message) {
       errorMessage = error.response.data.message
     }
 
+    // dung cho refresh token
     if (error?.response?.status !== 410) {
       toast.error(errorMessage)
     }

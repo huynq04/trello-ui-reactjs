@@ -76,8 +76,3 @@ export const verifyUserAPI = async (id, hash, data) => {
   })
   return res.data
 }
-
-export const loginUserAPI = async (data) => {
-  const response = await authorizeAxiosInstance.post(`${API_ROOT}/login`, data)
-  return response.data
-}
