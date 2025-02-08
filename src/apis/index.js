@@ -76,3 +76,8 @@ export const verifyUserAPI = async (id, hash, data) => {
   })
   return res.data
 }
+
+export const fetchBoardsAPI = async (searchPath) => {
+  const response = await authorizeAxiosInstance.get(`${API_ROOT}/api/boards${searchPath}`)
+  return response.data
+}
