@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/client'
 import App from '~/App.jsx'
-import CssBaseline from '@mui/material/CssBaseline'
+import { GlobalStyles, CssBaseline } from '@mui/material'
 import { Experimental_CssVarsProvider as CssVarsProvider } from '@mui/material/styles'
 import theme from '~/theme'
 import { ToastContainer } from 'react-toastify' // Cấu hình react-toastify
@@ -36,6 +36,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               buttonOrder: ['confirm', 'cancel']
             }}
           >
+            <GlobalStyles styles={{ a: { textDecoration: 'none' } }} />
             <CssBaseline />
             <App />
             <ToastContainer position='bottom-left' theme='colored' />

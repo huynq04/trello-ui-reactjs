@@ -19,7 +19,7 @@ import {
   EMAIL_RULE_MESSAGE
 } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
-import { getMyInfo, loginUserAPI } from '~/redux/user/userSlice'
+import { loginUserAPI } from '~/redux/user/userSlice'
 // import { loginUserAPI } from '~/apis'
 import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
@@ -41,7 +41,6 @@ function LoginForm() {
         pending: 'Logging in...'
       })
       .then((res) => {
-        console.log(res)
         if (!res.error) navigate('/')
       })
   }

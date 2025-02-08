@@ -29,6 +29,11 @@ export const getMyInfo = createAsyncThunk('user/getMyInfo', async () => {
   return response.data
 })
 
+export const updateUserAPI = createAsyncThunk('user/updateUserAPI', async (data) => {
+  const response = await authorizeAxiosInstance.put(`${API_ROOT}/api/users/update`, data)
+  return response.data
+})
+
 export const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -53,6 +58,11 @@ export const userSlice = createSlice({
 
     builder.addCase(logoutUserAPI.fulfilled, (state) => {
       state.currentUser = null
+    })
+
+    builder.addCase(updateUserAPI.fulfilled, (state, action) => {
+      let user = action.payload
+      state.currentUser = user
     })
   }
 })
