@@ -12,15 +12,8 @@ import { toast } from 'react-toastify'
  * (Và ở học phần MERN Stack Advance nâng cao học trực tiếp mình sẽ dạy cực kỳ đầy đủ cách xử lý, áp dụng phần này chuẩn chinh cho các bạn)
  */
 
-/** Boards **/
-// export const fetchBoardDetailsAPI = async (boardId) => {
-//   const response = await axios.get(`${API_ROOT}/v1/boards/${boardId}`)
-//   // Lưu ý: axios sẽ trả về kết quả về qua property của nó là data
-//   return response.data
-// }
-
 export const moveCardToDifferentColumnAPI = async (updateData) => {
-  const response = await authorizeAxiosInstance.put(`${API_ROOT}/api/cards/move-to-different-column`, updateData)
+  const response = await authorizeAxiosInstance.put(`${API_ROOT}/api/cards/move-to-another-column`, updateData)
   return response.data
 }
 
@@ -46,7 +39,7 @@ export const updateColumnDetailsAPI = async (columnId, updateData) => {
 }
 
 export const moveCardInColumn = async (updateData) => {
-  const response = await authorizeAxiosInstance.put(`${API_ROOT}/api/cards/move`, updateData)
+  const response = await authorizeAxiosInstance.put(`${API_ROOT}/api/cards/move-in-column`, updateData)
   return response.data
 }
 

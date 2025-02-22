@@ -14,7 +14,7 @@
 let apiRoot = ''
 
 if (process.env.BUILD_MODE === 'dev') {
-  apiRoot = 'http://localhost:8000'
+  apiRoot = 'http://localhost:3000'
 }
 if (process.env.BUILD_MODE === 'production') {
   // Trong này sẽ là đường dẫn đến back-end khi project phía back-end đã deploy lên cloud

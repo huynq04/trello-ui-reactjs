@@ -37,18 +37,20 @@ export const activeBoardSlice = createSlice({
       let board = action.payload
 
       // Sắp xếp thứ tự các column luôn ở đây trước khi đưa dữ liệu xuống bên dưới các component con (video 71 đã giải thích lý do ở phần Fix bug quan trọng)
-      // board.column = mapOrder(board.column, board.columnOrderIds, 'id')
+      board.columns = mapOrder(board.columns, board.columnOrderIds, '_id')
 
       board.columns.forEach((column) => {
         // Khi F5 trang web thì cần xử lý vấn đề kéo thả vào một column rỗng (Nhớ lại video 37.2, code hiện tại là video 69)
         if (isEmpty(column.cards)) {
           column.cards = [generatePlaceholderCard(column)]
-          // column.cardOrderIds = [generatePlaceholderCard(column).id]
+          column.cardOrderIds = [generatePlaceholderCard(column)._id]
         } else {
           // Sắp xếp thứ tự các column luôn ở đây trước khi đưa dữ liệu xuống bên dưới các component con (video 71 đã giải thích lý do ở phần Fix bug quan trọng)
-          // column.cards = mapOrder(column.cards, column.cardOrderIds, 'id')
+          column.cards = mapOrder(column.cards, column.cardOrderIds, '_id')
         }
       })
+
+      console.log('board', board)
 
       state.currentActiveBoard = board
     })

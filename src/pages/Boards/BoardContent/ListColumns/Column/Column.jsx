@@ -35,7 +35,7 @@ function Column({ column }) {
   const board = useSelector(selectCurrentActiveBoard)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: column.id,
+    id: column._id,
     data: { ...column }
   })
 
@@ -74,25 +74,23 @@ function Column({ column }) {
     // Tạo dữ liệu Card để gọi API
     const newCardData = {
       title: newCardTitle,
-      column_id: column.id
+      columnId: column._id
     }
 
-    const createdCard = await createNewCardAPI({
-      ...newCardData
-    })
+    const createdCard = await createNewCardAPI(newCardData)
 
     const newBoard = cloneDeep(board)
-    const columnToUpdate = newBoard.columns.find((column) => column.id === createdCard.column_id)
+    const columnToUpdate = newBoard.columns.find((column) => column.id === createdCard.column._id)
 
     if (columnToUpdate) {
       // Nếu column rỗng: bản chất là đang chứa một cái Placeholder card (Nhớ lại video 37.2, hiện tại là video 69)
       if (columnToUpdate.cards.some((card) => card.FE_PlaceholderCard)) {
         columnToUpdate.cards = [createdCard]
-        // columnToUpdate.cardOrderIds = [createdCard.id]
+        columnToUpdate.cardOrderIds = [createdCard._id]
       } else {
         // Ngược lại Column đã có data thì push vào cuối mảng columnToUpdate.cards.push(createdCard)
         columnToUpdate.cards.push(createdCard)
-        // columnToUpdate.cardOrderIds.push(createdCard.id)
+        columnToUpdate.cardOrderIds.push(createdCard._id)
       }
     }
     dispatch(updateCurrentActiveBoard(newBoard))
@@ -115,11 +113,12 @@ function Column({ column }) {
       .then(() => {
         // Xử lý xóa một Column và Cards bên trong nó
         // Update cho chuẩn dữ liệu state Board
-        const columnId = column.id
+        const columnId = column._id
         const newBoard = { ...board }
-        newBoard.columns = newBoard.columns.filter((c) => c.id !== columnId)
+        newBoard.columns = newBoard.columns.filter((c) => c._id !== columnId)
 
-        // newBoard.columnOrderIds = newBoard.columnOrderIds.filter((id) => id !== columnId)
+        newBoard.columnOrderIds = newBoard.columnOrderIds.filter((id) => id !== columnId)
+
         dispatch(updateCurrentActiveBoard(newBoard))
 
         deleteColumnDetailsAPI(columnId).then((res) => {
@@ -130,9 +129,9 @@ function Column({ column }) {
   }
 
   const onUpdateColumnTitle = (newTitle) => {
-    updateColumnDetailsAPI(column.id, { title: newTitle }).then(() => {
+    updateColumnDetailsAPI(column._id, { title: newTitle }).then(() => {
       const newBoard = cloneDeep(board)
-      const columnToUpdate = newBoard.columns.find((c) => c.id === column.id)
+      const columnToUpdate = newBoard.columns.find((c) => c._id === column._id)
       if (columnToUpdate) columnToUpdate.title = newTitle
 
       dispatch(updateCurrentActiveBoard(newBoard))

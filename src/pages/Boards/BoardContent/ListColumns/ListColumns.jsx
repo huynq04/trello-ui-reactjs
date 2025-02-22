@@ -34,15 +34,12 @@ function ListColumns({ columns }) {
 
     const createdColumn = await createNewColumnAPI({
       ...newColumnData,
-      board_id: board.id
+      boardId: board._id
     })
 
     // Khi tạo column mới thì nó sẽ chưa có card, cần xử lý vấn đề kéo thả vào một column rỗng (Nhó lại video 37.2, code hiện tại là video 69)
     createdColumn.cards = [generatePlaceholderCard(createdColumn)]
-
-    console.log('createdColumn', createdColumn);
-    
-    // createdColumn.cardOrderIds = [generatePlaceholderCard(createdColumn).id]
+    createdColumn.cardOrderIds = [generatePlaceholderCard(createdColumn)._id]
 
     // Cập nhật state board
     /**
@@ -51,7 +48,7 @@ function ListColumns({ columns }) {
      */
     const newBoard = cloneDeep(board)
     newBoard.columns.push(createdColumn)
-    // newBoard.columnOrderIds.push(createdColumn.id)
+    newBoard.columnOrderIds.push(createdColumn._id)
 
     dispatch(updateCurrentActiveBoard(newBoard))
 
@@ -66,7 +63,7 @@ function ListColumns({ columns }) {
    * https://github.com/clauderic/dnd-kit/issues/183#issuecomment-812569512
    */
   return (
-    <SortableContext items={columns?.map((c) => c.id)} strategy={horizontalListSortingStrategy}>
+    <SortableContext items={columns?.map((c) => c._id)} strategy={horizontalListSortingStrategy}>
       <Box
         sx={{
           bgcolor: 'inherit',
@@ -79,7 +76,7 @@ function ListColumns({ columns }) {
         }}
       >
         {columns?.map((column) => (
-          <Column key={column.id} column={column} />
+          <Column key={column._id} column={column} />
         ))}
 
         {/* Box Add new column CTA */}
@@ -150,7 +147,6 @@ function ListColumns({ columns }) {
               }}
             >
               <Button
-                className='interceptor-loading'
                 onClick={addNewColumn}
                 variant='contained'
                 color='success'
