@@ -33,13 +33,13 @@ function RegisterForm() {
   } = useForm()
 
   const submitRegister = (data) => {
-    const { email, password, password_confirmation } = data
+    const { email, password } = data
     toast
-      .promise(registerUserAPI({ email, password, password_confirmation }), {
+      .promise(registerUserAPI({ email, password }), {
         pending: 'Creating your account...'
       })
       .then((user) => {
-        // navigate()
+        navigate(`/login?registeredEmail=${user.email}`)
       })
   }
 

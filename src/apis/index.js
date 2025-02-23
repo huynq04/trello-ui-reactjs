@@ -62,8 +62,8 @@ export const registerUserAPI = async (data) => {
   return res.data
 }
 
-export const verifyUserAPI = async (id, hash, data) => {
-  const res = await authorizeAxiosInstance.post(`${API_ROOT}/api/auth/email/verify/${id}/${hash}`, data)
+export const verifyUserAPI = async (data) => {
+  const res = await authorizeAxiosInstance.put(`${API_ROOT}/api/auth/verify`, data)
   toast.success('Account verified successfully! Now you can enjoy our services! Have a great day!', {
     theme: 'colored'
   })

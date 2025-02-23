@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { interceptorLoadingElements } from './formatters'
-import { updateCurrentUser } from '~/redux/user/userSlice'
+import { logoutUserAPI } from '~/redux/user/userSlice'
 
 let store
 export const injectStore = (_store) => {
@@ -48,7 +48,7 @@ authorizeAxiosInstance.interceptors.response.use(
 
     // neu ma loi 401 thi logout
     if (error?.response?.status === 401) {
-      store.dispatch(updateCurrentUser(null))
+      store.dispatch(logoutUserAPI(false))
     }
 
     let errorMessage = error?.message

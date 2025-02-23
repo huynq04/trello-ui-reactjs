@@ -1,26 +1,21 @@
-import { useState, useEffect } from 'react'
-import { useSearchParams, Navigate, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useSearchParams, Navigate } from 'react-router-dom'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import { verifyUserAPI } from '~/apis'
 
 function AccountVerification() {
-  const [verified, setVerified] = useState(false)
   let [searchParams] = useSearchParams()
-  const { id, hash } = useParams()
-  const { expires, signature } = Object.fromEntries([...searchParams])
+  const { email, token } = Object.fromEntries([...searchParams])
+
+  const [verified, setVerified] = useState(false)
 
   useEffect(() => {
-    if (id && hash && expires && signature) {
-      verifyUserAPI(id, hash, {
-        expires,
-        signature
-      }).then(() => {
-        setVerified(true)
-      })
+    if (email && token) {
+      verifyUserAPI({ email, token }).then(() => setVerified(true))
     }
-  }, [expires, hash, id, signature])
+  }, [email, token])
 
-  if (!id || !hash || !expires || !signature) {
+  if (!email || !token) {
     return <Navigate to='/404' />
   }
 
@@ -28,11 +23,7 @@ function AccountVerification() {
     return <PageLoadingSpinner caption='Verifying your account...' />
   }
 
-  return (
-    <div>
-      <h1>Account Verification</h1>
-    </div>
-  )
+  return <Navigate to={`/login?verifiedEmail=${email}`} replace={true} />
 }
 
 export default AccountVerification

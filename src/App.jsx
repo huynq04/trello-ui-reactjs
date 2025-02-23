@@ -33,7 +33,7 @@ function App() {
       {/* Authentication */}
       <Route path='/login' element={<Auth />} />
       <Route path='/register' element={<Auth />} />
-      <Route path='/account/verification/:id/:hash' element={<AccountVerification />} />
+      <Route path='/account/verification' element={<AccountVerification />} />
 
       {/* 404 */}
       <Route path='*' element={<NotFound />} />
