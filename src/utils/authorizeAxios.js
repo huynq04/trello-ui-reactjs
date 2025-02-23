@@ -2,6 +2,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import { interceptorLoadingElements } from './formatters'
 import { logoutUserAPI } from '~/redux/user/userSlice'
+import { refreshTokenAPI } from '~/apis'
 
 let store
 export const injectStore = (_store) => {
@@ -13,6 +14,8 @@ let authorizeAxiosInstance = axios.create()
 authorizeAxiosInstance.defaults.timeout = 1000 * 60 * 10 // 10 minutes
 
 authorizeAxiosInstance.defaults.withCredentials = true
+
+let refreshToekenPromise = null
 
 // Add a request interceptor
 authorizeAxiosInstance.interceptors.request.use(
@@ -49,6 +52,30 @@ authorizeAxiosInstance.interceptors.response.use(
     // neu ma loi 401 thi logout
     if (error?.response?.status === 401) {
       store.dispatch(logoutUserAPI(false))
+    }
+
+    const originalRequest = error.config
+
+    if (error?.response?.status === 410 && !originalRequest._retry) {
+      originalRequest._retry = true
+
+      if (!refreshToekenPromise) {
+        refreshToekenPromise = refreshTokenAPI()
+          .then((data) => {
+            return data
+          })
+          .catch(() => {
+            // logout neu refresh token loi nhung ben tren co code bat loi 401 roi
+            // store.dispatch(logoutUserAPI(false))
+          })
+          .finally(() => {
+            refreshToekenPromise = null
+          })
+      }
+
+      return refreshToekenPromise.then(() => {
+        return authorizeAxiosInstance(originalRequest)
+      })
     }
 
     let errorMessage = error?.message

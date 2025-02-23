@@ -70,6 +70,11 @@ export const verifyUserAPI = async (data) => {
   return res.data
 }
 
+export const refreshTokenAPI = async () => {
+  const res = await authorizeAxiosInstance.get(`${API_ROOT}/api/auth/refresh_token`)
+  return res.data
+}
+
 export const fetchBoardsAPI = async (searchPath) => {
   const response = await authorizeAxiosInstance.get(`${API_ROOT}/api/boards${searchPath}`)
   return response.data

@@ -23,6 +23,7 @@ export const logoutUserAPI = createAsyncThunk('user/logoutUserAPI', async (showS
 
   return response.data
 })
+
 export const updateUserAPI = createAsyncThunk('user/updateUserAPI', async (data) => {
   const response = await authorizeAxiosInstance.put(`${API_ROOT}/api/users/update`, data)
   return response.data

@@ -21,14 +21,14 @@ function App() {
       <Route path='/' element={<Navigate to='/boards' replace={true} />} />
 
       {/* board detail */}
-      {/* <Route element={<ProtectedRoute user={currentUser} />}> */}
-      <Route path='/boards/:boardId' element={<Board />} />
-      <Route path='/boards' element={<Boards />} />
+      <Route element={<ProtectedRoute user={currentUser} />}>
+        <Route path='/boards/:boardId' element={<Board />} />
+        <Route path='/boards' element={<Boards />} />
 
-      {/* User setting */}
-      <Route path='/settings/account' element={<Settings />} />
-      <Route path='/settings/security' element={<Settings />} />
-      {/* </Route> */}
+        {/* User setting */}
+        <Route path='/settings/account' element={<Settings />} />
+        <Route path='/settings/security' element={<Settings />} />
+      </Route>
 
       {/* Authentication */}
       <Route path='/login' element={<Auth />} />
