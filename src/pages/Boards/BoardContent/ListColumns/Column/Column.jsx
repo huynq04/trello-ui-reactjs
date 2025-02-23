@@ -163,6 +163,17 @@ function Column({ column }) {
             justifyContent: 'space-between'
           }}
         >
+          {/* <Typography
+            variant='h6'
+            sx={{
+              fontSize: '1rem',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}
+          >
+            {column?.title}
+          </Typography> */}
+
           <ToggleFocusInput value={column?.title} onChangedValue={onUpdateColumnTitle} data-no-dnd='true' />
           <Box>
             <Tooltip title='More options'>

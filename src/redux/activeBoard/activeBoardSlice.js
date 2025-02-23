@@ -50,8 +50,6 @@ export const activeBoardSlice = createSlice({
         }
       })
 
-      console.log('board', board)
-
       state.currentActiveBoard = board
     })
   }

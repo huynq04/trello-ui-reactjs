@@ -36,6 +36,9 @@ function ToggleFocusInput({ value, onChangedValue, inputFontSize = '16px', ...pr
       {...props}
       // Magic here :D
       sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         '& label': {},
         '& input': { fontSize: inputFontSize, fontWeight: 'bold' },
         '& .MuiOutlinedInput-root': {
