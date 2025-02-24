@@ -38,7 +38,7 @@ function AccountTab() {
 
   // Những thông tin của user để init vào form (key tương ứng với register phía dưới Field)
   const initialGeneralForm = {
-    displayName: currentUser?.display_name
+    displayName: currentUser?.displayName
   }
   // Sử dụng defaultValues để set giá trị mặc định cho các field cần thiết
   const {
@@ -52,14 +52,14 @@ function AccountTab() {
   const submitChangeGeneralInformation = (data) => {
     const { displayName } = data
 
-    if (displayName === currentUser?.display_name) return
+    if (displayName === currentUser?.displayName) return
 
     // Gọi API...
     toast
-      .promise(dispatch(updateUserAPI({ display_name: displayName })), {
+      .promise(dispatch(updateUserAPI({ displayName })), {
         pending: 'Updating...'
       })
-      .then((res) => {
+      .then(res => {
         if (!res.error) {
           toast.success('User information updated successfully')
         }
@@ -118,7 +118,7 @@ function AccountTab() {
             </Tooltip>
           </Box>
           <Box>
-            <Typography variant='h6'>{currentUser?.display_name}</Typography>
+            <Typography variant='h6'>{currentUser?.displayName}</Typography>
             <Typography sx={{ color: 'grey' }}>@{currentUser?.username}</Typography>
           </Box>
         </Box>

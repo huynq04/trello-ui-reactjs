@@ -41,11 +41,11 @@ function SecurityTab() {
       cancellationText: 'Cancel'
     })
       .then(() => {
-        const { current_password, new_password, new_password_confirmation } = data
+        const { current_password, new_password } = data
 
         // Gọi API...
         toast
-          .promise(dispatch(updateUserAPI({ current_password, new_password, new_password_confirmation })), {
+          .promise(dispatch(updateUserAPI({ currentPassword: current_password, newPassword: new_password })), {
             pending: 'Updating...'
           })
           .then((res) => {

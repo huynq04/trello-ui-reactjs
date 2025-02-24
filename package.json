@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "cross-env BUILD_MODE=dev vite --host",
     "build": "cross-env BUILD_MODE=production vite build --base=./",
-    "lint": "eslint --ext ts,tsx src/",
+    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint --fix --ext ts,tsx src/",
     "prettier": "prettier --check \"src/**/(*.tsx|*.ts|*.css|*.scss)\"",
     "prettier:fix": "prettier --write \"src/**/(*.tsx|*.ts|*.css|*.scss)\"",
