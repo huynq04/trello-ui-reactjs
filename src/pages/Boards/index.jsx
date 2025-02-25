@@ -62,7 +62,7 @@ function Boards() {
   const page = parseInt(query.get('page') || '1', 10)
 
   const updateStateData = (res) => {
-    setBoards(res?.data)
+    setBoards(res?.boards)
     setTotalBoards(res?.total)
   }
 
@@ -120,7 +120,7 @@ function Boards() {
             {boards?.length > 0 && (
               <Grid container spacing={2}>
                 {boards.map((b) => (
-                  <Grid xs={2} sm={3} md={4} key={b.id}>
+                  <Grid xs={2} sm={3} md={4} key={b._id}>
                     <Card sx={{ width: '250px' }}>
                       {/* Ý tưởng mở rộng về sau làm ảnh Cover cho board nhé */}
                       {/* <CardMedia component="img" height="100" image="https://picsum.photos/100" /> */}
@@ -139,7 +139,7 @@ function Boards() {
                         </Typography>
                         <Box
                           component={Link}
-                          to={`/boards/${b?.id}`}
+                          to={`/boards/${b?._id}`}
                           sx={{
                             mt: 1,
                             display: 'flex',

@@ -80,7 +80,7 @@ function Column({ column }) {
     const createdCard = await createNewCardAPI(newCardData)
 
     const newBoard = cloneDeep(board)
-    const columnToUpdate = newBoard.columns.find((column) => column.id === createdCard.column._id)
+    const columnToUpdate = newBoard.columns.find((column) => column._id === createdCard.column._id)
 
     if (columnToUpdate) {
       // Nếu column rỗng: bản chất là đang chứa một cái Placeholder card (Nhớ lại video 37.2, hiện tại là video 69)
@@ -163,17 +163,6 @@ function Column({ column }) {
             justifyContent: 'space-between'
           }}
         >
-          {/* <Typography
-            variant='h6'
-            sx={{
-              fontSize: '1rem',
-              fontWeight: 'bold',
-              cursor: 'pointer'
-            }}
-          >
-            {column?.title}
-          </Typography> */}
-
           <ToggleFocusInput value={column?.title} onChangedValue={onUpdateColumnTitle} data-no-dnd='true' />
           <Box>
             <Tooltip title='More options'>
