@@ -25,8 +25,5 @@ const persistedReducer = persistReducer(rootPersistConfig, reducers)
 export const store = configureStore({
   reducer: persistedReducer,
   // fix warning error when using redux-persist
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false
-    })
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false })
 })

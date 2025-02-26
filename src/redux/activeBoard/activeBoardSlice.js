@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { API_ROOT } from '~/utils/constants'
 import { mapOrder } from '~/utils/sorts'
 import { generatePlaceholderCard } from '~/utils/formatters'
-import { isEmpty } from 'lodash'
+import { cloneDeep, isEmpty } from 'lodash'
 import authorizeAxiosInstance from '~/utils/authorizeAxios'
 
 const initialState = {
@@ -28,6 +28,19 @@ export const activeBoardSlice = createSlice({
 
       // update lai du lieu cua currentActiveBoard
       state.currentActiveBoard = board
+    },
+
+    updateCardInBoard: (state, action) => {
+      const incomingCard = action.payload
+
+      const column = state.currentActiveBoard.columns.find((column) => column._id === incomingCard.columnId)
+
+      if (column) {
+        const card = column.cards.find((card) => card._id === incomingCard._id)
+        if (card) {
+          Object.assign(card, incomingCard)
+        }
+      }
     }
   },
   // ExtraReducer: noi xu ly du lieu bat dong bo (async)
@@ -35,6 +48,8 @@ export const activeBoardSlice = createSlice({
     builder.addCase(fetchBoardDetailsAPI.fulfilled, (state, action) => {
       // payload la response.data o api(fetchBoardDetailsAPI) tren
       let board = action.payload
+
+      board.FE_allUsers = board.userBoardsGroup
 
       // Sắp xếp thứ tự các column luôn ở đây trước khi đưa dữ liệu xuống bên dưới các component con (video 71 đã giải thích lý do ở phần Fix bug quan trọng)
       board.columns = mapOrder(board.columns, board.columnOrderIds, '_id')
@@ -56,7 +71,7 @@ export const activeBoardSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { updateCurrentActiveBoard } = activeBoardSlice.actions
+export const { updateCurrentActiveBoard, updateCardInBoard } = activeBoardSlice.actions
 
 export const selectCurrentActiveBoard = (state) => {
   return state.activeBoard.currentActiveBoard

@@ -8,17 +8,14 @@ export const activeCardSlice = createSlice({
   name: 'activeCard',
   initialState,
   reducers: {
-
     clearCurrentActiveCard: (state) => {
       state.currentActiveCard = null
     },
-
     updateCurrentActiveCard: (state, action) => {
       const fullCard = action.payload
 
       state.currentActiveCard = fullCard
     }
-
   },
   // eslint-disable-next-line no-unused-vars
   extraReducers: (builder) => {}

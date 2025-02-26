@@ -37,6 +37,8 @@ import { styled } from '@mui/material/styles'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearCurrentActiveCard, selectCurrentActiveCard, updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
 import { updateCardDetailAPI } from '~/apis'
+import { updateCardInBoard } from '~/redux/activeBoard/activeBoardSlice'
+
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -71,7 +73,11 @@ function ActiveCard() {
   const callApiUpdateCard = async (updateData) => {
     const updatedCard = await updateCardDetailAPI(activeCard._id, updateData)
 
+    // update lai card dang active trong modal
     dispatch(updateCurrentActiveCard(updatedCard))
+
+    // update lai cac ban ghi card trong activeBoard
+    dispatch(updateCardInBoard(updatedCard))
 
     return updatedCard
   }
@@ -81,7 +87,7 @@ function ActiveCard() {
   }
 
   const onUploadCardCover = (event) => {
-    console.log(event.target?.files[0])
+    // console.log(event.target?.files[0])
     const error = singleFileValidator(event.target?.files[0])
     if (error) {
       toast.error(error)
@@ -91,6 +97,14 @@ function ActiveCard() {
     reqData.append('cardCover', event.target?.files[0])
 
     // Gọi API...
+    toast.promise(callApiUpdateCard(
+      reqData).finally(() => event.target.value = ''), {
+      pending: 'Uploading...'
+    })
+  }
+
+  const onUpdateCardDescription = (newDescription) => {
+    callApiUpdateCard({ description: newDescription })
   }
 
   return (
@@ -158,7 +172,10 @@ function ActiveCard() {
               </Box>
 
               {/* Feature 03: Xử lý mô tả của Card */}
-              <CardDescriptionMdEditor />
+              <CardDescriptionMdEditor
+                cardDescriptionProp={activeCard?.description}
+                handleUpdateCardDescription={onUpdateCardDescription}
+              />
             </Box>
 
             <Box sx={{ mb: 3 }}>

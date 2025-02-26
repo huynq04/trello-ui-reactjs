@@ -94,7 +94,9 @@ function BoardBar({ board }) {
         </Button>
 
         {/* Hiển thị user trong board */}
-        <BoardUserGroup />
+        <BoardUserGroup
+          boardUsers={board?.FE_allUsers}
+        />
       </Box>
     </Box>
   )
