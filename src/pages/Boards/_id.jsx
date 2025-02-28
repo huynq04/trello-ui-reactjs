@@ -14,12 +14,10 @@ import { cloneDeep } from 'lodash'
 import { useParams } from 'react-router-dom'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import ActiveCard from '~/components/Modal/ActiveCard/ActiveCard'
-import { selectCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
 
 function Board() {
   const dispatch = useDispatch()
   const board = useSelector(selectCurrentActiveBoard)
-  const activeCard = useSelector(selectCurrentActiveCard)
 
   const { boardId } = useParams()
 
@@ -107,8 +105,8 @@ function Board() {
         height: '100vh'
       }}
     >
-      {/* Check hien thi active card */}
-      {activeCard && <ActiveCard />}
+      {/* modol active card */}
+      <ActiveCard />
 
       <AppBar />
       <BoardBar board={board} />
