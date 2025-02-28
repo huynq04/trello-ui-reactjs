@@ -11,7 +11,8 @@ import Button from '@mui/material/Button'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useDispatch } from 'react-redux'
-import { showModalActiveCard, updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
+import { fetchCardDetailsAPI, showModalActiveCard } from '~/redux/activeCard/activeCardSlice'
+import { toast } from 'react-toastify'
 
 function Card({ card }) {
   const dispatch = useDispatch()
@@ -34,12 +35,15 @@ function Card({ card }) {
   }
 
   const shouldShowCardAction = () => {
-    return !!card?.memberIds?.length || !!card?.comments?.length || !!card?.attachments?.length
+    return !!card?.memberCards?.length || !!card?.comments?.length || !!card?.attachments?.length
   }
 
   const setActiveCard = () => {
-    dispatch(updateCurrentActiveCard(card))
-    dispatch(showModalActiveCard())
+    toast.promise(
+      dispatch(fetchCardDetailsAPI(card._id)),
+      { pending: 'Đang tải dữ liệu thẻ...' }
+    )
+      .then(() => dispatch(showModalActiveCard()))
   }
 
   return (
@@ -68,9 +72,9 @@ function Card({ card }) {
 
       {shouldShowCardAction() && (
         <CardActions sx={{ p: '0 4px 8px 4px' }}>
-          {!!card?.memberIds?.length && (
+          {!!card?.memberCards?.length && (
             <Button size='small' startIcon={<GroupIcon />}>
-              {card?.memberIds?.length}
+              {card?.memberCards?.length}
             </Button>
           )}
 
